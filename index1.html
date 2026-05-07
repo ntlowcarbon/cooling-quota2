@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>冷氣清洗補助名額</title>
+
+  <style>
+    body{
+      font-family: sans-serif;
+      background:#f4f7fa;
+      text-align:center;
+      padding:40px;
+    }
+
+    .card{
+      max-width:500px;
+      margin:auto;
+      background:white;
+      padding:30px;
+      border-radius:20px;
+      box-shadow:0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    h1{
+      color:#2c7a7b;
+    }
+
+    .number{
+      font-size:60px;
+      font-weight:bold;
+      color:#e53e3e;
+      margin:20px 0;
+    }
+
+    .progress{
+      width:100%;
+      height:30px;
+      background:#ddd;
+      border-radius:20px;
+      overflow:hidden;
+      margin-top:20px;
+    }
+
+    .bar{
+      height:100%;
+      background:#38a169;
+      width:0%;
+      transition:0.5s;
+    }
+
+    .info{
+      margin-top:20px;
+      font-size:18px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card">
+
+    <h1>南投縣冷氣清洗補助</h1>
+
+    <div class="number" id="remain">讀取中...</div>
+    <div id="percentText"></div>
+    <div class="progress">
+      <div class="bar" id="bar"></div>
+    </div>
+
+    <div class="info">
+      總名額：<span id="total"></span><br>
+      已申請：<span id="used"></span><br><br>
+
+      <small id="updateTime"></small>
+    </div>
+
+  </div>
+
+<script>
+
+const sheetID = '1HKTmzZAjpri3xkTSSh54HDVZ0lajAh2vGwBZBQC03bg';
+const api =
+`https://opensheet.elk.sh/${sheetID}/Sheet1`;
+
+fetch(api)
+.then(res => res.json())
+.then(data => {
+
+  const total = parseInt(data[0].total);
+  const used = parseInt(data[0].used);
+  const updateTime = data[0].update;
+
+  const remain = total - used;
+
+  document.getElementById('remain').innerText =
+    remain + ' 台';
+
+  document.getElementById('total').innerText =
+    total;
+
+  document.getElementById('used').innerText =
+    used;
+
+  const percent = Math.round((used / total) * 100);
+  const remainPercent = 100 - percent;
+  document.getElementById('bar').style.width =
+    percent + '%';
+  document.getElementById('percentText').innerText =
+    '剩餘 ' + remainPercent + '%';
+  document.getElementById('updateTime').innerText =
+    '最後更新：' + updateTime;
+    if(remainPercent < 20){
+
+  document.getElementById('bar').style.background =
+    '#e53e3e';
+
+}
+else if(remainPercent < 50){
+
+  document.getElementById('bar').style.background =
+    '#dd6b20';
+}
+});
+
+</script>
+
+</body>
+</html>
